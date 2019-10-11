@@ -1,0 +1,96 @@
+﻿@using MVCForum.Domain.DomainModel.General
+@{
+    // Global Stuff
+    var themeName = Html.Settings().Theme;
+    var theme = new Theme
+    {
+        ThemeName = themeName,
+        ThemePath = string.Concat(AppConstants.ThemeRootFolder, themeName)
+    };
+    TempData[AppConstants.GlobalClass] = Convert.ToBoolean(PageData[AppConstants.IsMobileDevice]) ? "mobile" : "desktop";
+    TempData[AppConstants.CurrentAction] = ViewContext.RouteData.GetRequiredString("action").ToLower();
+    TempData[AppConstants.CurrentController] = ViewContext.RouteData.GetRequiredString("controller").ToLower();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website#">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    <meta name="description" content="@ViewBag.MetaDesc" />
+    <meta property="og:url" content="@HttpContext.Current.Request.Url.AbsoluteUri" />
+    <meta property="og:description" content="@ViewBag.MetaDesc" />
+    <meta property="og:title" content="@ViewBag.Title" />
+    <meta property="og:site_name" content="@Html.Settings().ForumName" />
+    <meta property="og:type" content="website" />
+    @RenderSection("SocialMeta", false)
+    @ViewBag.Canonical
+    @Html.Partial("_StyleSheets", theme)
+    <!--[if lt IE 9]>
+            <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link rel="shortcut icon" href="@Url.Content(theme.ThemePath + "/content/images/favicon.ico")">
+    <link rel="apple-touch-icon-precomposed" href="@Url.Content(theme.ThemePath + "/content/images/apple-touch-icon-57-precomposed.png")">
+    @Html.Partial("_JavaScript", theme)
+    @RenderSection("Header", false)
+    @if (!string.IsNullOrEmpty(Html.Settings().CustomHeaderCode))
+    {
+        @Html.Raw(Html.Settings().CustomHeaderCode)
+    }
+</head>
+
+<body>
+    
+    <div class="site-overlay"></div>    
+
+    <header>
+
+        <nav class="navbar navbar-default" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle menu-btn">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="@Url.Action("Index", "Home")">
+                        <img src="@Url.Content(theme.ThemePath + "/content/images/logo.png")" alt="@Html.Lang("Site.MvcForum")" class="logoimg"/>                        
+                    </a>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <section class="container main-section">
+        @Html.Partial("_GenericMessage")
+        @Html.Partial("_EmailConfirmationNotice")
+        @Html.Partial("_NoScript")
+        <div id="main" class="mainbody">
+
+            @RenderBody()
+
+        </div>
+    </section>
+
+
+    <footer>
+        <div class="container">
+
+            @RenderSection("Footer", false)
+
+            <div class="row">
+                <div class="col-sm-6">
+                    @Html.Action("GetCurrentActiveMembers", "Members")
+                </div>
+            </div>
+
+        </div>
+    </footer>
+    @Html.Partial("_SlideOutPanel")
+    @if (!string.IsNullOrEmpty(Html.Settings().CustomFooterCode))
+    {
+        @Html.Raw(Html.Settings().CustomFooterCode)
+    }    
+</body>
+</html>

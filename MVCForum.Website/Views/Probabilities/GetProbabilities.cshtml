@@ -1,0 +1,52 @@
+﻿
+
+@{
+    ViewBag.Title = "GetProbabilities";
+    Layout = "~/Views/Shared/_LayoutMain.cshtml";
+}
+
+<div style="min-height:525px">
+    <div style="padding-left:30%;padding-right:30%;padding-top:5%;padding-bottom:10%">
+        <select id="ddlLeague">
+            <option value="0">Lig Seç</option>
+            @foreach (var league in ViewBag.Leagues)
+            {
+                <option value="@league.LeagueId">@league.LeagueName</option>
+            }
+        </select>
+        <select id="ddlSeason">
+            <option value="0">Sezon Seç</option>
+            @foreach (var season in ViewBag.Seasons)
+            {
+                <option value="@season.SeasonId">@season.SeasonName</option>
+            }
+        </select>
+        <select id="ddlTeam">
+            <option value="0">Takım Seç</option>
+            @foreach (var team in ViewBag.Teams)
+            {
+                <option value="@team.TeamId">@team.TeamName</option>
+            }
+        </select>
+        <button id="btnSearch" onclick="onSearchClick();">Ara</button>
+        <img src="~/Image/ajax-loader.gif" id="imgLoading" hidden="hidden" />
+    </div>
+    <div id="divSearchResult">
+
+    </div>
+</div>
+<script>
+    function onSearchClick()
+    {
+        $("#imgLoading").toggle();
+        $("#btnSearch").toggle();
+        $.get("/Probabilities/SearchResult?leagueId=" + $("#ddlLeague").val() + "&seasonId=" + $("#ddlSeason").val() + "&teamId=" + $("#ddlTeam").val(), function (data) {
+            $("#divSearchResult").html(data);
+        })  
+        .always(function () {
+            $("#imgLoading").toggle();
+            $("#btnSearch").toggle();
+        });
+
+    }
+</script>
